@@ -1,0 +1,35 @@
+# === Python Virtual Environment ===
+ocr_env/
+venv/
+.venv/
+env/
+ENV/
+*.pyc
+__pycache__/
+
+# === Temporary OCR Application Cache Files ===
+temp_*.jpg
+temp_*.png
+temp_*.jpeg
+ui_upload_temp.jpg
+temp_page_*.jpg
+
+# === IDE and Editor Settings ===
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# === Operating System Trash ===
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# === Testing Inputs / Outputs ===
+document.pdf
+test.jpg
+invoice.jpg

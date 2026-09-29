@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        PP-OCRv5 Document OCR
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                #0f172a;
+
+            color:
+                #f8fafc;
+
+            min-height:
+                100vh;
+        }
+
+
+        /* ==================================================
+           HEADER
+           ================================================== */
+
+        .header {
+
+            padding: 25px;
+
+            text-align: center;
+
+            border-bottom:
+                1px solid #334155;
+        }
+
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+        }
+
+
+        .header p {
+
+            margin: 8px 0 0;
+
+            color:
+                #94a3b8;
+        }
+
+
+        /* ==================================================
+           MAIN
+           ================================================== */
+
+        .container {
+
+            max-width:
+                1200px;
+
+            margin:
+                30px auto;
+
+            padding:
+                0 20px;
+        }
+
+
+        /* ==================================================
+           UPLOAD CARD
+           ================================================== */
+
+        .upload-card {
+
+            background:
+                #1e293b;
+
+            border:
+                1px solid #334155;
+
+            border-radius:
+                16px;
+
+            padding:
+                25px;
+
+            text-align:
+                center;
+        }
+
+
+        #fileInput {
+            display: none;
+        }
+
+
+        .upload-button {
+
+            display:
+                inline-block;
+
+            padding:
+                14px 25px;
+
+            background:
+                #2563eb;
+
+            color:
+                white;
+
+            border-radius:
+                10px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                bold;
+        }
+
+
+        .upload-button:hover {
+            background:
+                #1d4ed8;
+        }
+
+
+        .file-name {
+
+            margin-top:
+                15px;
+
+            color:
+                #94a3b8;
+        }
+
+
+        .action-button {
+
+            margin-top:
+                15px;
+
+            padding:
+                13px 25px;
+
+            border:
+                none;
+
+            border-radius:
+                10px;
+
+            background:
+                #16a34a;
+
+            color:
+                white;
+
+            font-size:
+                16px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+        }
+
+
+        .action-button:hover {
+            background:
+                #15803d;
+        }
+
+
+        .action-button:disabled {
+
+            background:
+                #475569;
+
+            cursor:
+                not-allowed;
+        }
+
+
+        /* ==================================================
+           TIMER
+           ================================================== */
+
+        .timer-box {
+
+            margin:
+                20px auto 0;
+
+            max-width:
+                300px;
+
+            background:
+                #020617;
+
+            border:
+                1px solid #334155;
+
+            border-radius:
+                12px;
+
+            padding:
+                15px;
+        }
+
+
+        .timer-label {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+        }
+
+
+        #timer {
+
+            margin-top:
+                5px;
+
+            font-size:
+                28px;
+
+            font-weight:
+                bold;
+
+            color:
+                #38bdf8;
+
+            font-family:
+                monospace;
+        }
+
+
+        /* ==================================================
+           STATUS
+           ================================================== */
+
+        .status {
+
+            margin-top:
+                15px;
+
+            padding:
+                12px;
+
+            border-radius:
+                8px;
+
+            display:
+                none;
+        }
+
+
+        .status.loading {
+
+            display:
+                block;
+
+            background:
+                #172554;
+
+            color:
+                #93c5fd;
+        }
+
+
+        .status.success {
+
+            display:
+                block;
+
+            background:
+                #052e16;
+
+            color:
+                #86efac;
+        }
+
+
+        .status.error {
+
+            display:
+                block;
+
+            background:
+                #450a0a;
+
+            color:
+                #fca5a5;
+        }
+
+
+        /* ==================================================
+           PREVIEW
+           ================================================== */
+
+        .preview-card {
+
+            margin-top:
+                25px;
+
+            background:
+                #1e293b;
+
+            border:
+                1px solid #334155;
+
+            border-radius:
+                16px;
+
+            padding:
+                20px;
+        }
+
+
+        .preview-card h2 {
+            margin-top: 0;
+        }
+
+
+        .canvas-wrapper {
+
+            width:
+                100%;
+
+            overflow:
+                auto;
+
+            background:
+                #020617;
+
+            border-radius:
+                10px;
+
+            padding:
+                10px;
+
+            text-align:
+                center;
+        }
+
+
+        #previewCanvas {
+
+            max-width:
+                100%;
+
+            height:
+                auto;
+
+            display:
+                block;
+
+            margin:
+                auto;
+        }
+
+
+        /* ==================================================
+           RESULTS
+           ================================================== */
+
+        .results {
+
+            margin-top:
+                25px;
+
+            display:
+                none;
+        }
+
+
+        .results-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    1fr
+                );
+
+            gap:
+                15px;
+        }
+
+
+        .result-card {
+
+            background:
+                #1e293b;
+
+            border:
+                1px solid #334155;
+
+            border-radius:
+                14px;
+
+            padding:
+                20px;
+
+            text-align:
+                center;
+        }
+
+
+        .result-label {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                14px;
+        }
+
+
+        .result-value {
+
+            margin-top:
+                8px;
+
+            font-size:
+                30px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .accuracy-value {
+            color:
+                #22c55e;
+        }
+
+
+        .blocks-value {
+            color:
+                #38bdf8;
+        }
+
+
+        .time-value {
+            color:
+                #f59e0b;
+        }
+
+
+        .engine-value {
+
+            color:
+                #c084fc;
+
+            font-size:
+                20px;
+        }
+
+
+        /* ==================================================
+           TEXT RESULTS
+           ================================================== */
+
+        .text-results {
+
+            margin-top:
+                25px;
+
+            background:
+                #1e293b;
+
+            border:
+                1px solid #334155;
+
+            border-radius:
+                16px;
+
+            padding:
+                20px;
+        }
+
+
+        .text-results h2 {
+            margin-top: 0;
+        }
+
+
+        .result-row {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            padding:
+                14px 0;
+
+            border-bottom:
+                1px solid #334155;
+        }
+
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .recognized-text {
+
+            flex: 1;
+
+            color:
+                #f8fafc;
+
+            word-break:
+                break-word;
+        }
+
+
+        .confidence {
+
+            min-width:
+                80px;
+
+            text-align:
+                right;
+
+            font-weight:
+                bold;
+
+            color:
+                #22c55e;
+        }
+
+
+        /* ==================================================
+           MOBILE
+           ================================================== */
+
+        @media (
+            max-width: 800px
+        ) {
+
+            .results-grid {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+            }
+        }
+
+
+        @media (
+            max-width: 500px
+        ) {
+
+            .results-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .result-row {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+            }
+
+
+            .confidence {
+
+                text-align:
+                    left;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ====================================================
+         HEADER
+         ==================================================== -->
+
+    <div class="header">
+
+        <h1>
+            PP-OCRv5 Document OCR
+        </h1>
+
+        <p>
+            PaddleOCR 3.7 • PP-OCRv5
+        </p>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- =================================================
+             UPLOAD
+             ================================================= -->
+
+        <div class="upload-card">
+
+            <h2>
+                Upload Document
+            </h2>
+
+            <p>
+                Upload an image or PDF document
+            </p>
+
+
+            <label
+                for="fileInput"
+                class="upload-button"
+            >
+                Choose File
+            </label>
+
+
+            <input
+                type="file"
+                id="fileInput"
+                accept="image/*,.pdf"
+            >
+
+
+            <div
+                id="fileName"
+                class="file-name"
+            >
+                No file selected
+            </div>
+
+
+            <button
+                id="ocrButton"
+                class="action-button"
+                disabled
+            >
+                Run OCR
+            </button>
+
+
+            <!-- ============================================
+                 TIMER
+                 ============================================ -->
+
+            <div class="timer-box">
+
+                <div class="timer-label">
+                    OCR Processing Time
+                </div>
+
+                <div id="timer">
+                    00:00.00
+                </div>
+
+            </div>
+
+
+            <div
+                id="status"
+                class="status"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             PREVIEW
+             ================================================= -->
+
+        <div
+            id="previewCard"
+            class="preview-card"
+            style="display:none;"
+        >
+
+            <h2>
+                Document Preview
+            </h2>
+
+
+            <div class="canvas-wrapper">
+
+                <canvas
+                    id="previewCanvas"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RESULTS
+             ================================================= -->
+
+        <div
+            id="results"
+            class="results"
+        >
+
+
+            <div class="results-grid">
+
+
+                <!-- Overall Accuracy -->
+
+                <div class="result-card">
+
+                    <div class="result-label">
+                        Overall Accuracy
+                    </div>
+
+                    <div
+                        id="overallAccuracy"
+                        class="result-value accuracy-value"
+                    >
+                        0.00%
+                    </div>
+
+                </div>
+
+
+                <!-- Total Blocks -->
+
+                <div class="result-card">
+
+                    <div class="result-label">
+                        Text Blocks
+                    </div>
+
+                    <div
+                        id="totalBlocks"
+                        class="result-value blocks-value"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <!-- Processing Time -->
+
+                <div class="result-card">
+
+                    <div class="result-label">
+                        Processing Time
+                    </div>
+
+                    <div
+                        id="processingTime"
+                        class="result-value time-value"
+                    >
+                        00:00.00
+                    </div>
+
+                </div>
+
+
+                <!-- Engine -->
+
+                <div class="result-card">
+
+                    <div class="result-label">
+                        OCR Engine
+                    </div>
+
+                    <div
+                        id="engine"
+                        class="result-value engine-value"
+                    >
+                        PP-OCRv5
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 EXTRACTED TEXT
+                 ================================================= -->
+
+            <div class="text-results">
+
+                <h2>
+                    Extracted Text
+                </h2>
+
+
+                <div
+                    id="textResults"
+                ></div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ====================================================
+         JAVASCRIPT
+         ==================================================== -->
+
+    <script>
+
+
+        // ==================================================
+        // ELEMENTS
+        // ==================================================
+
+        const fileInput =
+            document.getElementById(
+                "fileInput"
+            );
+
+
+        const fileName =
+            document.getElementById(
+                "fileName"
+            );
+
+
+        const ocrButton =
+            document.getElementById(
+                "ocrButton"
+            );
+
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+
+        const previewCard =
+            document.getElementById(
+                "previewCard"
+            );
+
+
+        const previewCanvas =
+            document.getElementById(
+                "previewCanvas"
+            );
+
+
+        const results =
+            document.getElementById(
+                "results"
+            );
+
+
+        const overallAccuracy =
+            document.getElementById(
+                "overallAccuracy"
+            );
+
+
+        const totalBlocks =
+            document.getElementById(
+                "totalBlocks"
+            );
+
+
+        const processingTime =
+            document.getElementById(
+                "processingTime"
+            );
+
+
+        const engine =
+            document.getElementById(
+                "engine"
+            );
+
+
+        const textResults =
+            document.getElementById(
+                "textResults"
+            );
+
+
+        const timerElement =
+            document.getElementById(
+                "timer"
+            );
+
+
+        // ==================================================
+        // TIMER VARIABLES
+        // ==================================================
+
+        let timerInterval = null;
+
+        let timerStartTime = null;
+
+
+        // ==================================================
+        // FORMAT TIMER
+        // ==================================================
+
+        function formatTimer(
+            milliseconds
+        ) {
+
+            const totalSeconds =
+                milliseconds / 1000;
+
+
+            const minutes =
+                Math.floor(
+                    totalSeconds / 60
+                );
+
+
+            const seconds =
+                totalSeconds % 60;
+
+
+            return (
+                String(minutes)
+                    .padStart(2, "0")
+                +
+                ":"
+                +
+                String(
+                    Math.floor(seconds)
+                )
+                    .padStart(2, "0")
+                +
+                "."
+                +
+                String(
+                    Math.floor(
+                        milliseconds % 1000
+                    )
+                )
+                    .padStart(3, "0")
+                    .substring(0, 2)
+            );
+        }
+
+
+        // ==================================================
+        // START TIMER
+        // ==================================================
+
+        function startTimer() {
+
+            // Clear previous timer
+
+            if (timerInterval) {
+
+                clearInterval(
+                    timerInterval
+                );
+            }
+
+
+            timerStartTime =
+                performance.now();
+
+
+            timerElement.textContent =
+                "00:00.00";
+
+
+            timerInterval =
+                setInterval(
+                    function () {
+
+                        const elapsed =
+                            performance.now()
+                            -
+                            timerStartTime;
+
+
+                        timerElement.textContent =
+                            formatTimer(
+                                elapsed
+                            );
+
+                    },
+                    50
+                );
+        }
+
+
+        // ==================================================
+        // STOP TIMER
+        // ==================================================
+
+        function stopTimer() {
+
+            if (!timerStartTime) {
+                return;
+            }
+
+
+            const elapsed =
+                performance.now()
+                -
+                timerStartTime;
+
+
+            if (timerInterval) {
+
+                clearInterval(
+                    timerInterval
+                );
+
+                timerInterval =
+                    null;
+            }
+
+
+            timerElement.textContent =
+                formatTimer(
+                    elapsed
+                );
+
+
+            timerStartTime =
+                null;
+
+
+            return elapsed;
+        }
+
+
+        // ==================================================
+        // FILE SELECT
+        // ==================================================
+
+        fileInput.addEventListener(
+            "change",
+            function () {
+
+                const file =
+                    fileInput.files[0];
+
+
+                if (!file) {
+
+                    ocrButton.disabled =
+                        true;
+
+                    fileName.textContent =
+                        "No file selected";
+
+                    return;
+                }
+
+
+                fileName.textContent =
+                    file.name;
+
+
+                ocrButton.disabled =
+                    false;
+
+
+                // Reset previous timer
+
+                if (timerInterval) {
+
+                    clearInterval(
+                        timerInterval
+                    );
+
+                    timerInterval =
+                        null;
+                }
+
+
+                timerStartTime =
+                    null;
+
+
+                timerElement.textContent =
+                    "00:00.00";
+
+
+                results.style.display =
+                    "none";
+
+
+                // ==========================================
+                // IMAGE PREVIEW
+                // ==========================================
+
+                if (
+                    file.type.startsWith(
+                        "image/"
+                    )
+                ) {
+
+                    const image =
+                        new Image();
+
+
+                    image.onload =
+                        function () {
+
+                            previewCanvas.width =
+                                image.width;
+
+                            previewCanvas.height =
+                                image.height;
+
+
+                            const ctx =
+                                previewCanvas.getContext(
+                                    "2d"
+                                );
+
+
+                            ctx.clearRect(
+                                0,
+                                0,
+                                previewCanvas.width,
+                                previewCanvas.height
+                            );
+
+
+                            ctx.drawImage(
+                                image,
+                                0,
+                                0
+                            );
+
+
+                            previewCard.style.display =
+                                "block";
+                        };
+
+
+                    image.src =
+                        URL.createObjectURL(
+                            file
+                        );
+
+                } else {
+
+                    // PDF preview is not rendered
+                    // on canvas here
+
+                    previewCard.style.display =
+                        "none";
+                }
+
+            }
+        );
+
+
+        // ==================================================
+        // RUN OCR
+        // ==================================================
+
+        ocrButton.addEventListener(
+            "click",
+            async function () {
+
+                const file =
+                    fileInput.files[0];
+
+
+                if (!file) {
+
+                    showStatus(
+                        "Please select a file first.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // ==========================================
+                // START TIMER
+                // ==========================================
+
+                startTimer();
+
+
+                ocrButton.disabled =
+                    true;
+
+
+                showStatus(
+                    "OCR is processing... Timer is running.",
+                    "loading"
+                );
+
+
+                results.style.display =
+                    "none";
+
+
+                try {
+
+
+                    // ======================================
+                    // FORM DATA
+                    // ======================================
+
+                    const formData =
+                        new FormData();
+
+
+                    formData.append(
+                        "file",
+                        file
+                    );
+
+
+                    // ======================================
+                    // SEND TO BACKEND
+                    // ======================================
+
+                    const response =
+                        await fetch(
+                            "/ocr",
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+                    // ======================================
+                    // STOP TIMER
+                    // ======================================
+
+                    const clientElapsed =
+                        stopTimer();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            `Server error: ${response.status}`
+                        );
+                    }
+
+
+                    // ======================================
+                    // JSON
+                    // ======================================
+
+                    const data =
+                        await response.json();
+
+
+                    console.log(
+                        "OCR RESPONSE:",
+                        data
+                    );
+
+
+                    // ======================================
+                    // SUCCESS CHECK
+                    // ======================================
+
+                    if (!data.success) {
+
+                        throw new Error(
+                            data.error ||
+                            "OCR processing failed."
+                        );
+                    }
+
+
+                    // ======================================
+                    // OVERALL ACCURACY
+                    // ======================================
+
+                    overallAccuracy.textContent =
+                        data.overall_accuracy_text ||
+                        "0.00%";
+
+
+                    // ======================================
+                    // TEXT BLOCKS
+                    // ======================================
+
+                    totalBlocks.textContent =
+                        data.total_blocks ||
+                        0;
+
+
+                    // ======================================
+                    // PROCESSING TIME
+                    // ======================================
+
+                    processingTime.textContent =
+                        data.processing_time_text ||
+                        formatTimer(
+                            clientElapsed
+                        );
+
+
+                    // ======================================
+                    // ENGINE
+                    // ======================================
+
+                    engine.textContent =
+                        data.engine ||
+                        "PP-OCRv5";
+
+
+                    // ======================================
+                    // TEXT RESULTS
+                    // ======================================
+
+                    textResults.innerHTML =
+                        "";
+
+
+                    const ocrResults =
+                        data.results || [];
+
+
+                    if (
+                        ocrResults.length === 0
+                    ) {
+
+                        textResults.innerHTML = `
+
+                            <div
+                                style="
+                                    color:#fbbf24;
+                                    padding:15px;
+                                "
+                            >
+                                No text was detected.
+                            </div>
+
+                        `;
+
+                    } else {
+
+
+                        ocrResults.forEach(
+                            function (item) {
+
+
+                                const row =
+                                    document.createElement(
+                                        "div"
+                                    );
+
+
+                                row.className =
+                                    "result-row";
+
+
+                                const text =
+                                    document.createElement(
+                                        "div"
+                                    );
+
+
+                                text.className =
+                                    "recognized-text";
+
+
+                                text.textContent =
+                                    item.text;
+
+
+                                const confidence =
+                                    document.createElement(
+                                        "div"
+                                    );
+
+
+                                confidence.className =
+                                    "confidence";
+
+
+                                confidence.textContent =
+                                    `${Number(
+                                        item.confidence
+                                    ).toFixed(2)}%`;
+
+
+                                row.appendChild(
+                                    text
+                                );
+
+
+                                row.appendChild(
+                                    confidence
+                                );
+
+
+                                textResults.appendChild(
+                                    row
+                                );
+
+                            }
+                        );
+
+                    }
+
+
+                    // ======================================
+                    // SHOW RESULTS
+                    // ======================================
+
+                    results.style.display =
+                        "block";
+
+
+                    showStatus(
+                        "OCR completed successfully!",
+                        "success"
+                    );
+
+
+                } catch (error) {
+
+
+                    // Stop timer even if error occurs
+
+                    stopTimer();
+
+
+                    console.error(
+                        "OCR ERROR:",
+                        error
+                    );
+
+
+                    showStatus(
+                        error.message ||
+                        "OCR failed.",
+                        "error"
+                    );
+
+
+                } finally {
+
+
+                    ocrButton.disabled =
+                        false;
+
+                }
+
+            }
+        );
+
+
+        // ==================================================
+        // STATUS FUNCTION
+        // ==================================================
+
+        function showStatus(
+            message,
+            type
+        ) {
+
+            status.textContent =
+                message;
+
+            status.className =
+                `status ${type}`;
+        }
+
+
+    </script>
+
+</body>
+
+</html>
